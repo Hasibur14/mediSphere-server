@@ -29,6 +29,13 @@ async function run() {
         const serviceCollection = client.db('mediSphere').collection('services');
 
 
+        //get service data
+        app.get('/services', async (req, res) => {
+            const cursor = serviceCollection.find()
+            const result = await cursor.toArray()
+            res.send(result)
+        })
+
         //add service in db
         app.post("/service", async (req, res) => {
             const serviceData = req.body
