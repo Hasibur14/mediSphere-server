@@ -36,6 +36,13 @@ async function run() {
             const result = await cursor.toArray()
             res.send(result)
         });
+       
+        //get popular service data
+        app.get('/popularServices', async (req, res) => {
+            const cursor = serviceCollection.find()
+            const result = await cursor.toArray()
+            res.send(result)
+        });
 
         // Get a single service data from db using service id
         app.get('/services/:id', async (req, res) => {
