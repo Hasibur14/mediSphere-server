@@ -27,7 +27,7 @@ async function run() {
     try {
 
         const serviceCollection = client.db('mediSphere').collection('services');
-       // const bookedCollection = client.db('mediSphere').collection('booked');
+        const bookedCollection = client.db('mediSphere').collection('booked');
 
 
         //get service data
@@ -59,10 +59,32 @@ async function run() {
             res.send(result)
         })
 
+        //get a service data from db using email
+        app.get('/serviceJob/:providerEmail', async (req, res) => {
+            const providerEmail = req.params.providerEmail;
+            const cursor = serviceCollection.find({ providerEmail });
+            const result = await cursor.toArray();
+            res.send(result);
+        });
+  
+        //Delete service data
+        app.delete('/serviceDelete/:id', async (req, res) => {
+            const id = req.params.id;
+            const query = { _id: new ObjectId(id) }
+            const result = await serviceCollection.deleteOne(query)
+            res.send(result);
 
+            
+        })
 
-        // booked service
+        // ....BOOKED SERVICE......
 
+        //add service book in db
+        app.post("/serviceBook", async (req, res) => {
+            const serviceBook = req.body
+            const result = await bookedCollection.insertOne(serviceBook);
+            res.send(result)
+        })
 
 
 
