@@ -44,7 +44,8 @@ async function run() {
             const result = await serviceCollection.findOne(query)
             res.send(result)
         });
-
+           
+        //service details
         app.get('/service/:id', async (req, res) => {
             const id = req.params.id
             const query = { _id: new ObjectId(id) }
@@ -68,7 +69,7 @@ async function run() {
         });
 
         //Delete service data
-        app.delete('/service/:id', async (req, res) => {
+        app.delete('/serviceDelete/:id', async (req, res) => {
             const id = req.params.id;
             const query = { _id: new ObjectId(id) }
             const result = await serviceCollection.deleteOne(query)
@@ -76,7 +77,7 @@ async function run() {
         })
 
         // update a job in db
-        app.put('/service/:id', async (req, res) => {
+        app.put('/serviceUpdate/:id', async (req, res) => {
             const id = req.params.id
             const serviceData = req.body
             const query = { _id: new ObjectId(id) }
@@ -86,18 +87,28 @@ async function run() {
                     ...serviceData,
                 },
             }
-            const result = await jobsCollection.updateOne(query, updateDoc, options)
+            const result = await serviceCollection.updateOne(query, updateDoc, options)
             res.send(result)
         })
-
-        // ....BOOKED SERVICE......
-
+ /**
+ * ..............................................
+ *                    BOOKED SERVICE
+ * ..............................................
+ */     
         //add service book in db
         app.post("/serviceBook", async (req, res) => {
             const serviceBook = req.body
             const result = await bookedCollection.insertOne(serviceBook);
             res.send(result)
         })
+ 
+        // get data  suing user email in db
+        app.get('/booked/:userEmail', async (req, res) => {
+            const userEmail = req.params.userEmail
+            const cursor = bookedCollection.find({ userEmail });
+            const result = await cursor.toArray();
+            res.send(result);
+        });
 
 
 
