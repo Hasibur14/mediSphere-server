@@ -66,15 +66,28 @@ async function run() {
             const result = await cursor.toArray();
             res.send(result);
         });
-  
+
         //Delete service data
-        app.delete('/serviceDelete/:id', async (req, res) => {
+        app.delete('/service/:id', async (req, res) => {
             const id = req.params.id;
             const query = { _id: new ObjectId(id) }
             const result = await serviceCollection.deleteOne(query)
             res.send(result);
+        })
 
-            
+        // update a job in db
+        app.put('/service/:id', async (req, res) => {
+            const id = req.params.id
+            const serviceData = req.body
+            const query = { _id: new ObjectId(id) }
+            const options = { upsert: true }
+            const updateDoc = {
+                $set: {
+                    ...serviceData,
+                },
+            }
+            const result = await jobsCollection.updateOne(query, updateDoc, options)
+            res.send(result)
         })
 
         // ....BOOKED SERVICE......
