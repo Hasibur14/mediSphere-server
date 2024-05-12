@@ -27,6 +27,7 @@ async function run() {
     try {
 
         const serviceCollection = client.db('mediSphere').collection('services');
+       // const bookedCollection = client.db('mediSphere').collection('booked');
 
 
         //get service data
@@ -34,7 +35,7 @@ async function run() {
             const cursor = serviceCollection.find()
             const result = await cursor.toArray()
             res.send(result)
-        })
+        });
 
         // Get a single service data from db using service id
         app.get('/services/:id', async (req, res) => {
@@ -42,7 +43,14 @@ async function run() {
             const query = { _id: new ObjectId(id) }
             const result = await serviceCollection.findOne(query)
             res.send(result)
-        })
+        });
+
+        app.get('/service/:id', async (req, res) => {
+            const id = req.params.id
+            const query = { _id: new ObjectId(id) }
+            const result = await serviceCollection.findOne(query)
+            res.send(result)
+        });
 
         //add service in db
         app.post("/service", async (req, res) => {
@@ -50,6 +58,11 @@ async function run() {
             const result = await serviceCollection.insertOne(serviceData);
             res.send(result)
         })
+
+
+
+        // booked service
+
 
 
 
