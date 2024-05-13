@@ -123,10 +123,19 @@ async function run() {
             const cursor = bookedCollection.find({ providerEmail });
             const result = await cursor.toArray();
             res.send(result);
+        });
+
+         //update bid status
+         app.patch('/book/:id', async (req, res) => {
+            const id = req.params.id
+            const status = req.body
+            const query = { _id: new ObjectId(id) }
+            const updateDoc = {
+                $set: status,
+            }
+            const result = await bookedCollection.updateOne(query, updateDoc)
+            res.send(result)
         })
-
-
-
 
 
 
