@@ -36,7 +36,7 @@ async function run() {
             const result = await cursor.toArray()
             res.send(result)
         });
-       
+
         //get popular service data
         app.get('/popularServices', async (req, res) => {
             const cursor = serviceCollection.find()
@@ -51,7 +51,7 @@ async function run() {
             const result = await serviceCollection.findOne(query)
             res.send(result)
         });
-           
+
         //service details
         app.get('/service/:id', async (req, res) => {
             const id = req.params.id
@@ -97,25 +97,34 @@ async function run() {
             const result = await serviceCollection.updateOne(query, updateDoc, options)
             res.send(result)
         })
- /**
- * ..............................................
- *                    BOOKED SERVICE
- * ..............................................
- */     
+        /**
+        * ..............................................
+        *                    BOOKED SERVICE
+        * ..............................................
+        */
         //add service book in db
         app.post("/serviceBook", async (req, res) => {
             const serviceBook = req.body
             const result = await bookedCollection.insertOne(serviceBook);
             res.send(result)
         })
- 
-        // get data  suing user email in db
+
+        // get data  using user email in db
         app.get('/booked/:userEmail', async (req, res) => {
             const userEmail = req.params.userEmail
             const cursor = bookedCollection.find({ userEmail });
             const result = await cursor.toArray();
             res.send(result);
         });
+
+        //get data in provider email
+        app.get('/bookRequest/:providerEmail', async (req, res) => {
+            const providerEmail = req.params.providerEmail
+            const cursor = bookedCollection.find({ providerEmail });
+            const result = await cursor.toArray();
+            res.send(result);
+        })
+
 
 
 
