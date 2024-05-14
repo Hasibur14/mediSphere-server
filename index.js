@@ -30,12 +30,34 @@ async function run() {
         const bookedCollection = client.db('mediSphere').collection('booked');
 
 
-        //get service data
-        app.get('/services', async (req, res) => {
-            const cursor = serviceCollection.find()
-            const result = await cursor.toArray()
-            res.send(result)
+        // //get all services data in db  
+        // app.get('/services', async (req, res) => {
+        //     const cursor = serviceCollection.find()
+        //     const result = await cursor.toArray()
+        //     res.send(result)
+        // });
+
+        // Get all service data search from db
+        app.get('/services-search', async (req, res) => {
+            const search = req.query.search;
+            let query = {
+                $or: [
+                    { serviceName: { $regex: search, $options: 'i' } },
+                    { serviceArea: { $regex: search, $options: 'i' } },
+                    { description: { $regex: search, $options: 'i' } },
+                    { providerEmail: { $regex: search, $options: 'i' } },
+                    { providerName: { $regex: search, $options: 'i' } },
+                    { price: { $eq: parseFloat(search) } } 
+                ]
+            };
+        
+            const result = await serviceCollection.find(query).toArray();
+            res.send(result);
         });
+        
+
+
+
 
         //get popular service data
         app.get('/popularServices', async (req, res) => {
@@ -96,11 +118,16 @@ async function run() {
             }
             const result = await serviceCollection.updateOne(query, updateDoc, options)
             res.send(result)
-        })
+        });
+
+
+
+
         /**
+              
         * ..............................................
         *                    BOOKED SERVICE
-        * ..............................................
+       * ..............................................
         */
         //add service book in db
         app.post("/serviceBook", async (req, res) => {
@@ -125,8 +152,8 @@ async function run() {
             res.send(result);
         });
 
-         //update bid status
-         app.patch('/book/:id', async (req, res) => {
+        //update bid status
+        app.patch('/book/:id', async (req, res) => {
             const id = req.params.id
             const status = req.body
             const query = { _id: new ObjectId(id) }
@@ -139,6 +166,8 @@ async function run() {
 
 
 
+
+
         await client.db("admin").command({ ping: 1 });
         console.log("Pinged your deployment. You successfully connected to MongoDB!");
     } finally {
@@ -146,12 +175,6 @@ async function run() {
     }
 }
 run().catch(console.dir);
-
-
-
-
-
-
 
 app.get('/', (req, res) => {
     res.send('mediSphere is Running')
