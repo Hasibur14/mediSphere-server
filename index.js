@@ -38,7 +38,7 @@ async function run() {
         // });
 
         // Get all service data search from db
-        app.get('/services-search', async (req, res) => {
+        app.get('/services', async (req, res) => {
             const search = req.query.search;
             let query = {
                 $or: [
@@ -47,14 +47,14 @@ async function run() {
                     { description: { $regex: search, $options: 'i' } },
                     { providerEmail: { $regex: search, $options: 'i' } },
                     { providerName: { $regex: search, $options: 'i' } },
-                    { price: { $eq: parseFloat(search) } } 
+                    { price: { $eq: parseFloat(search) } }
                 ]
             };
-        
+
             const result = await serviceCollection.find(query).toArray();
             res.send(result);
         });
-        
+
 
 
 
@@ -121,14 +121,10 @@ async function run() {
         });
 
 
+        // ..............................................
+        //                    BOOKED SERVICE
+        // ..............................................
 
-
-        /**
-              
-        * ..............................................
-        *                    BOOKED SERVICE
-       * ..............................................
-        */
         //add service book in db
         app.post("/serviceBook", async (req, res) => {
             const serviceBook = req.body
@@ -165,10 +161,7 @@ async function run() {
         })
 
 
-
-
-
-        await client.db("admin").command({ ping: 1 });
+        //await client.db("admin").command({ ping: 1 });
         console.log("Pinged your deployment. You successfully connected to MongoDB!");
     } finally {
 
