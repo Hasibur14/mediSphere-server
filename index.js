@@ -2,6 +2,7 @@ const express = require('express');
 const cors = require('cors');
 require('dotenv').config()
 const app = express();
+const stripe = require('stripe')(process.env.STRIPE_SECRET_KEY)
 const port = process.env.PORT || 5000;
 
 
@@ -30,23 +31,42 @@ async function run() {
         const bookedCollection = client.db('mediSphere').collection('booked');
 
 
-        // //get all services data in db  
-        // app.get('/services', async (req, res) => {
-        //     const cursor = serviceCollection.find()
-        //     const result = await cursor.toArray()
-        //     res.send(result)
-        // });
+        // create-payment-intent
+        app.post('/create-payment-intent',  async (req, res) => {
+            try {
+              const { price } = req.body;
+              const amount = price * 100;
+          
+              const paymentIntent = await stripe.paymentIntents.create({
+                currency: 'usd',
+                amount: amount,
+                payment_method_types: [
+                  "card"
+                ]
+          
+              })
+              res.send({
+                clientSecret: paymentIntent.client_secret,
+              });
+          
+          
+            } catch (error) {
+              res.send({
+                success: false,
+                error: error.message
+          
+              })
+            }
+          })
 
-        // Get all service data search from db
+
+
         app.get('/services', async (req, res) => {
             const search = req.query.search;
             let query = {
                 $or: [
                     { serviceName: { $regex: search, $options: 'i' } },
                     { serviceArea: { $regex: search, $options: 'i' } },
-                    { description: { $regex: search, $options: 'i' } },
-                    { providerEmail: { $regex: search, $options: 'i' } },
-                    { providerName: { $regex: search, $options: 'i' } },
                     { price: { $eq: parseFloat(search) } }
                 ]
             };
